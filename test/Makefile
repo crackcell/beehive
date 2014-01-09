@@ -1,5 +1,5 @@
 # Author:  Tan Menglong <tanmenglong@gmail.com>
-# Date:    Wed Jan  8 23:53:57 2014
+# Date:    Thu Jan  9 18:23:08 2014
 #
 # Make Target:
 # ------------
@@ -11,20 +11,23 @@
 
 include ../Makefile.env
 
-BUILD_TARGETS = beehive
+INC = -I../include -I../src
+LIB = -lgtest
 
-INC = -I../include -I./
-LIB = -ltbb
+BUILD_TARGETS = beehive_env_test
 
-SRC = $(wildcard *.cc)
-OBJ = $(patsubst %.cc, %.o, $(SRC))
-
-.PHONY : all clean
+.PHONY : all clean src check
 
 all : $(BUILD_TARGETS)
 
-$(BUILD_TARGETS) : $(OBJ)
-	$(LINK) -o $@ $^ $(LIB)
+clean :
+rm -rf $(TEST_OBJ) $(BUILD_TARGETS)
 
-clean:
-	rm -rf $(OBJ) $(BUILD_TARGETS)
+%_SUITE : %_SUITE.o
+$(LINK) -o $@ $^ $(OBJ) $(LIB)
+
+#check : all
+check : $(BUILD_TARGETS)
+for file in $(wildcard *SUITE); \
+do valgrind --leak-check=full ./$$file; \
+done;
