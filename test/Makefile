@@ -11,7 +11,7 @@
 
 include ../Makefile.env
 
-INC = -I../include -I../src
+INC = -I../include -I../frame
 LIB = -lgtest
 
 BUILD_TARGETS = beehive_env_test
@@ -21,13 +21,7 @@ BUILD_TARGETS = beehive_env_test
 all : $(BUILD_TARGETS)
 
 clean :
-rm -rf $(TEST_OBJ) $(BUILD_TARGETS)
+	rm -rf *.o *_test
 
-%_SUITE : %_SUITE.o
-$(LINK) -o $@ $^ $(OBJ) $(LIB)
-
-#check : all
-check : $(BUILD_TARGETS)
-for file in $(wildcard *SUITE); \
-do valgrind --leak-check=full ./$$file; \
-done;
+beehive_env_test :
+	$(CXX) ../frame/beehive_env.o beehive_env_test.cc -o $@ $(LIB) $(INC)
